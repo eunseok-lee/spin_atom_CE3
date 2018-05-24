@@ -1,0 +1,65 @@
+for ((dir=$1; dir<=$2; dir++))
+do
+
+dirname="data$dir"
+filename="$dirname/CONTCAR"
+filename2="$dirname/POSCAR"
+filename3="$dirname/OUTCAR"
+
+if [ -f $filename ]
+then
+
+head -2 $filename | tail -1 > $dirname/lc.dat
+
+head -5 $filename | tail -3 > $dirname/kvector.dat
+
+element=`head -6 $filename | tail -1`
+arr2=($element)
+
+natoms=`head -7 $filename | tail -1`
+arr=($natoms)
+
+(( nitem=`echo ${#arr[*]}`-1 ))
+
+touch $dirname/posLi.dat
+touch $dirname/posMn.dat
+touch $dirname/posNi.dat
+touch $dirname/posCo.dat
+touch $dirname/posO.dat
+touch $dirname/posLi0.dat
+touch $dirname/posMn0.dat
+touch $dirname/posNi0.dat
+touch $dirname/posCo0.dat
+touch $dirname/posO0.dat
+touch $dirname/magLi.dat
+touch $dirname/magMn.dat
+touch $dirname/magNi.dat
+touch $dirname/magCo.dat
+touch $dirname/magO.dat
+
+m=`more $filename3 | grep -n "magnetization (x)" | tail -1 | sed 's/:\ magnetization\ (x)//'`
+m=$(( $m+3 ))
+n=8
+
+for item in `eval echo {0..$nitem}`
+do
+
+n=$(( $n+${arr[item]} ))
+head -$n $filename | tail -${arr[item]} | sed 's/T   T   T//' > $dirname/pos${arr2[item]}.dat
+head -$n $filename2 | tail -${arr[item]} | sed 's/T   T   T//' | sed 's/${arr2[item]}//' > $dirname/pos${arr2[item]}0.dat
+
+m=$(( $m+${arr[item]} ))
+head -$m $filename3 | tail -${arr[item]} > $dirname/mag${arr2[item]}.dat
+
+done
+
+head -5 $filename | tail -3 > $dirname/kvector0.dat
+
+tail -1 $dirname/OSZICAR | sed 's/F=//;s/E0=//;s/d\ E\ =//;s/mag=//' > $dirname/energy.dat 
+
+echo "data of atomic species and energy in $dirname was extracted"
+
+fi
+
+done
+
