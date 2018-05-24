@@ -1,0 +1,24 @@
+# control parameters
+howmanyLi	1
+howmanyNi	0
+howmanyMn	2
+howmanyCo	1
+newstart	1
+max_iter	2000
+kT		0.0256
+dispfreq	100
+# cluster parameters
+np		4
+neighbor_num	3
+howmanyclustercol	10
+ncluster1	1
+ncluster2	2
+ncluster3	1
+# initial configuration in case of newstart 0
+data_ini_filename	data_initial0.dat
+magmom_ini_filename	magmom_initial0.dat
+# check with the existing data
+check_db	1
+data_db_filename	data_orig.dat
+corr_mat_db_filename	tmp_corr_mat.dat
+ndata		96
