@@ -1,0 +1,14 @@
+np			4
+neighbor_num		3
+ncluster1		1
+ncluster2		2
+ncluster3		1
+ndata			96
+# convex hull parameters
+Ndim			4
+near_convh_cutoff	1.0
+qhullflags		Q0
+# anomaly detection parameters
+use_anomaly_detection	0
+anomaly_score_crit	1.0
+knn			5
