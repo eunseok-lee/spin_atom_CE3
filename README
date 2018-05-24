@@ -35,5 +35,5 @@ Although they developed for the layered Li_[p]Ni_[q]Mn_[r]Co_[s]Va_[2-p-q-r-s]O_
 
 * * *
 k-NN algorithm for anomaly detection was implemented into data_to_corr_mat (sub-program 2).
-k-NN algorithm for anomaly detection was tested and is scheduled to be implemented into findcluster (sub-program 3) in the next version.
+An unsupervised training for data generlization was tested in Matlab version and is scheduled to be implemented into findcluster3 (sub-program 3) in the next version.
 
