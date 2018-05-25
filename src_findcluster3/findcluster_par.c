@@ -299,7 +299,7 @@ int main(int argc, char **argv)
             mkdir(dirname,0777);
             printf("Created a new directory for storing result.\n");
         }
-        sprintf(cluster_set_filename, "%s/cluster_set_N%d.dat",dirname,howmanycluster);
+        sprintf(cluster_set_filename, "%s/cluster_set_min.dat",dirname);
         sprintf(eci_filename,"%s/x.dat",dirname);
         fp2 = fopen(cluster_set_filename,"w");
         fp3 = fopen(eci_filename,"w");
