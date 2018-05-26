@@ -1,0 +1,26 @@
+# build cluster expansion associated codes.
+CC = mpiicc
+
+#CFLAGS = -g -w
+CFLAGS = -w
+
+LFLAGS = -L/global/common/sw/cray/sles12/x86_64/gsl/2.3/intel/17.0.2/klzza7k/lib
+LIBS = -lm -lgsl -lgslcblas
+
+INCLUDES = -I/global/common/sw/cray/sles12/x86_64/gsl/2.3/intel/17.0.2/klzza7k/include
+
+SRCS = findcluster_par.c obtainerr2_par.c least_square_solver.c mat2d_prod.c 
+OBJS = $(SRCS:.c=.o)
+
+TARGET = run_findcluster3
+
+default: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LFLAGS) $(LIBS)
+
+.c.o:
+	$(CC) $(CFLAGS) $(INCLUDES) -c $<  -o $@
+
+clean:
+	$(RM) $(TARGET) *.o
