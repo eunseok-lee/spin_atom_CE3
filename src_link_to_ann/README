@@ -1,0 +1,46 @@
+##########################################################
+# link_to_ann
+# written by Eunseok Lee
+# v1: June 5, 2018
+##########################################################
+
+This program is a part of the spin-atom CE package for the layered LNMCV system.
+This program selects a set of cluster functions to produce the lowest cross validation score for given correlation matrix, using the Metropolis Monte Carlo algorithm to scan the configurational space.
+The corresponding effective cluster interactions are also obtained.
+To compile this program, type 'make' at the prompt.
+
+>> make
+
+It will build an executable, run_link_to_ann. Note that at present this program will perform only serial job although it will be compiled using MPI. Hence, use sing cpu to run the executable.
+
+To run the executable, the parameters in the following list should be provided.
+
+1) datainput_filename: filename for datainput matrix
+2) datainput_rowsize: the number of rows in datainput matrix
+3) datainput_colsize: the number of columns in datainput matrix
+4) targets_filename: filename for target matrix
+5) targets_rowsize: the number of rows in target matrix
+6) targets_colsize: the number of rows in target matrix (e.g. 1 if the target is the formation energy only, which is usual)
+7) nfu: the number of formula units, in case the values of target is too big or too small, this factor can work as a scaler.
+8) max_iter: the maximum limit of the iteration
+9) num_hidden_neuron: the number of neurons in the hidden layer
+10) disp_freq: the frequency of display
+
+These parameters should be written in param.dat. Note that the number of neurons in the output layer is set to be equal to targets_colsize inside the program.
+
+In addition to param.dat, the following files also should be provided.
+1) datainput file (e.g. corr_mat_ugs.dat): data input matrix for ANN, which is corresponding to the correlation matrix here
+2) target file (e.g. Ef.dat): target feature, which is corresponding to the formation energy here
+
+The files 1)-2) can provided from the result of running data_to_corr_mat3 (another program of the package), or other external programs.
+
+You can run the executable as follows.
+
+>>./run_link_to_ann
+
+The following result files will be stored in dir_result, which will be created or updated during the running.
+
+1) hidden_layer.dat: the element of hidden layer matrix. Each row corresponds to each neuron.
+2) output_layer.dat: the element of output layer matrix. Each row corresponds to each neuron.
+
+So far, the performance of backpropgation algorithm, implemented in this version (v1), was not superior to the one using simulated annealing based on the cross-validation-score. If the performance is improved later by enploying other ANN techniques, the optimized network will be use used to predict the low energy structures.
