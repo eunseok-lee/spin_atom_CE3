@@ -1,0 +1,12 @@
+# parameters for findclusterNN
+datainput_filename	corr_mat.dat
+datainput_rowsize	495
+datainput_colsize	415
+targets_filename	Ef.dat
+targets_rowsize		495
+targets_colsize		1
+nfu			2160
+# parameters for neural network
+max_iter		100
+num_hidden_neuron	5
+disp_freq		100
