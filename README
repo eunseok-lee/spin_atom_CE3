@@ -2,6 +2,7 @@
 # Spin-Atom Cluster Expansion for quinary alloys
 # written by Eunseok Lee
 # v1: May 23, 2018
+# v2: June 5, 2018 (major update)
 ##########################################################
 
 This computational package is to perform cluster expansion (CE) for quinary alloys such as Li_pNi_qMn_rCo_sVa_{2-p-q-r-s}O2 (NMC cathode for Li ion batteries). The cluster functions are formulated from the coupled configuration of atomic species and magnetic moment at each lattice site. For further information, refer to Physical Review B 95, 085134 (2017) or http://atom.uah.edu.
@@ -12,6 +13,7 @@ The package consists of four sub-programs, listed in the following list. Each pr
 2) data_to_corr_mat3: convert the coupled configuration of atomic species and magnetic moment to the correlation matrix of CE
 3) findcluster3: select the most representative cluster functions (expansion basis) and the corresponding effective cluster interactions (expansion coefficient)
 4) predictstructure_ce3: predict the lowest energy structure using the result of 3)
+3a) link_to_ann: construct and optimize an artificial neural network to fit correlation matrix to formation energy
 
 The main function of the package is realized by sub-programs 3) and 4).
 
@@ -35,5 +37,7 @@ Although they developed for the layered Li_[p]Ni_[q]Mn_[r]Co_[s]Va_[2-p-q-r-s]O_
 
 * * *
 k-NN algorithm for anomaly detection was implemented into data_to_corr_mat (sub-program 2).
-An unsupervised training for data generlization was tested in Matlab version and is scheduled to be implemented into findcluster3 (sub-program 3) in the next version.
+
+* * *
+Backpropagation in artificial neural network architectures was implemended into link_to_ann (sub-program 3a) in version 2.
 
