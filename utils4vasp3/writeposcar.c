@@ -4,14 +4,15 @@
 #include <sys/stat.h>
 
 #define sp_Li 2
+#define sp_Ni 1
+#define sp_Mn 0
+#define sp_Co -1
 #define sp_Va -2
-#define sp_Mn 1
-#define sp_Ni -1
 
 int main(int argc, char *argv[]) {
     
     FILE *fp, *fp1, *fp2, *fp3, *fp4;
-    int i, np, howmanyLi, howmanyVa, howmanyMn, howmanyNi;
+    int i, np, howmanyLi, howmanyVa, howmanyMn, howmanyNi, howmanyCo;
     double *rp, *rpO, *kv;
     double tmp;
     char datfilename[100];
@@ -85,8 +86,11 @@ int main(int argc, char *argv[]) {
             case sp_Va:
                 howmanyVa++;
                 break;
+            case sp_Co:
+                howmanyCo++;
+                break;
             default:
-                printf("[E] %d-element: %d doesn't match to Li/Va/Mn/Ni\n",i,array[i]);
+                printf("[E] %d-element: %d doesn't match to Li/Ni/Mn/Co/Va\n",i,array[i]);
         }
     }
     
@@ -105,7 +109,7 @@ int main(int argc, char *argv[]) {
 
     sprintf(poscarfilename,"POSCAR");
     fp = fopen(poscarfilename,"w");
-    fprintf(fp,"LixMnyNizO2\n");
+    fprintf(fp,"LipNiqMnrCosO2\n");
     fprintf(fp,"1.0\n");
     fprintf(fp,"%.4f %.4f %.4f\n",*(kv+3*0),*(kv+3*0+1),*(kv+3*0+2));
     fprintf(fp,"%.4f %.4f %.4f\n",*(kv+3*1),*(kv+3*1+1),*(kv+3*1+2));
@@ -116,6 +120,8 @@ int main(int argc, char *argv[]) {
         fprintf(fp, "Mn ");
     if (howmanyNi > 0)
         fprintf(fp, "Ni ");
+    if (howmanyCo > 0)
+        fprintf(fp, "Co ");
     fprintf(fp,"O\n");
     if (howmanyLi > 0)
         fprintf(fp, "%d ", howmanyLi);
@@ -123,6 +129,8 @@ int main(int argc, char *argv[]) {
         fprintf(fp, "%d ", howmanyMn);
     if (howmanyNi > 0)
         fprintf(fp, "%d ", howmanyNi);
+    if (howmanyCo > 0)
+        fprintf(fp, "%d ", howmanyCo);
     fprintf(fp,"%d\n", np);
 
     fprintf(fp,"Direct\n");
@@ -140,6 +148,11 @@ int main(int argc, char *argv[]) {
     if (howmanyNi > 0)
         for (i=0;i<np;i++)
             if (array[i]==sp_Ni)
+                fprintf(fp, "%.4f %.4f %.4f Ni\n",*(rp+3*i),*(rp+3*i+1),*(rp+3*i+2));
+    
+    if (howmanyCo > 0)
+        for (i=0;i<np;i++)
+            if (array[i]==sp_Co)
                 fprintf(fp, "%.4f %.4f %.4f Ni\n",*(rp+3*i),*(rp+3*i+1),*(rp+3*i+2));
     
     for (i=0;i<np;i++)
