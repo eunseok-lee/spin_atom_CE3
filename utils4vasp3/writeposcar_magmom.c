@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
     char magfilename[100];
     char poscarfilename[100];
     char magmomfilename[100];
+    char fileflag[100];
     char buff_line[200];
     
     fp = fopen("rp.dat","r");
@@ -119,8 +120,9 @@ int main(int argc, char *argv[]) {
     }
     fclose(fp5);
     
-    sprintf(poscarfilename,"POSCAR");
-    sprintf(magmomfilename,"MAGMOM");
+    sprintf(fileflag, "%s", argv[3]);
+    sprintf(poscarfilename,"POSCAR_%s",fileflag);
+    sprintf(magmomfilename,"MAGMOM_%s",fileflag);
     fp = fopen(poscarfilename,"w");
     fp6 = fopen(magmomfilename,"w");
     fprintf(fp,"LipNiqMnrCosO2\n");
