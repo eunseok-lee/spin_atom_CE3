@@ -13,7 +13,7 @@ The package consists of four sub-programs, listed in the following list. Each pr
 2. data_to_corr_mat3: convert the coupled configuration of atomic species and magnetic moment to the correlation matrix of CE.
 3. findcluster3: select the most representative cluster functions (expansion basis) and the corresponding effective cluster interactions (expansion coefficient).
 4. predictstructure_ce3: predict the lowest energy structure using the result of 3).
-3a. link_to_ann: construct and optimize an artificial neural network to fit correlation matrix to formation energy.
+5. link_to_ann: construct and optimize an artificial neural network to fit correlation matrix to formation energy.
 
 The main function of the package is realized by sub-programs 3) and 4).
 
@@ -41,4 +41,4 @@ Although they developed for the layered Li_[p]Ni_[q]Mn_[r]Co_[s]Va_[2-p-q-r-s]O_
 * * *
 ### Updates
 - k-NN algorithm for anomaly detection was implemented into data_to_corr_mat (sub-program 2).
-- Backpropagation in artificial neural network architectures was implemended into link_to_ann (sub-program 3a) in version 2.
+- Backpropagation in artificial neural network architectures was implemended into link_to_ann (sub-program 5) in version 2.
