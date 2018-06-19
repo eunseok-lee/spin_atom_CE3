@@ -19,13 +19,15 @@ The main function of the package is realized by sub-programs 3) and 4).
 
 The every code was written in C. The most time consuming part of the package comes from the calculation of the correlation matrix. Hence, sub-programs 2), 3), and 4) were developed in parallel version, using MPI. Sub-program 1) is light to run and a serial program. 
 
+* * *
+*** Installation 
+Requirement: mpicc, GSL, qhull
+
 GNU Scientific Library (GSL) was used in several parts of the package and hence the installation of GSL is pre-requisite for compilation (refer to https://www.gnu.org/software/gsl/ for further information).
 
-*** The library from Qhull was also used to construct the convex hull and to calculate the formation energy above the convex hull. Hence, the user needs to install Qhull on their local machine and add the location of library to the PATH. The user can do this by downloading and extracting qhull package, 'make', 'make install', and 'export LD_LIBRARY_PATH=$PWD/lib:$LD_LIBRARY_PATH' (refer to http://www.qhull.org for detailed information). 
+The library from Qhull was also used to construct the convex hull and to calculate the formation energy above the convex hull. Hence, the user needs to install Qhull on their local machine and add the location of library to the PATH. The user can do this by downloading and extracting qhull package, 'make', 'make install', and 'export LD_LIBRARY_PATH=$PWD/lib:$LD_LIBRARY_PATH' (refer to http://www.qhull.org for detailed information). 
 
-*** For comparison, spin_atom_CE package (not spine_atom_CE3) uses its own code to construct the convex hull, not the library from Qhull.
-
-Requirement: mpicc, GSL, qhull
+For comparison, spin_atom_CE package (not spine_atom_CE3) uses its own code to construct the convex hull, not the library from Qhull.
 
 Although the sub-programs 2)~4) will be compiled by mpicc, they can run on single-cpu.
 
@@ -35,8 +37,8 @@ This version targets R-3m space group materials, such as the layered Li_[p]Ni_[q
 
 Although they developed for the layered Li_[p]Ni_[q]Mn_[r]Co_[s]Va_[2-p-q-r-s]O_2, the sub-programs 2)~4) can also be applied for any material system with 5x3 DOF at each lattice site if the classification of cluster functions and mapping from atomic clusters to cluster function are provided.
 
-* * *
-k-NN algorithm for anomaly detection was implemented into data_to_corr_mat (sub-program 2).
 
 * * *
-Backpropagation in artificial neural network architectures was implemended into link_to_ann (sub-program 3a) in version 2.
+*** Updates
+- k-NN algorithm for anomaly detection was implemented into data_to_corr_mat (sub-program 2).
+- Backpropagation in artificial neural network architectures was implemended into link_to_ann (sub-program 3a) in version 2.
