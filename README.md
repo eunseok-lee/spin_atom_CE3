@@ -7,17 +7,17 @@
 
 This computational package is to perform cluster expansion (CE) for quinary alloys such as Li_pNi_qMn_rCo_sVa_{2-p-q-r-s}O2 (NMC cathode for Li ion batteries). The cluster functions are formulated from the coupled configuration of atomic species and magnetic moment at each lattice site. For further information, refer to Physical Review B 95, 085134 (2017) or http://atom.uah.edu.
 
-The package consists of four sub-programs, listed in the following list. Each program can run independently if all required parameters are provided correctly.
+The package consists of five sub-programs, listed in the following list. Each program can run independently if all required parameters are provided correctly.
 
 1. clusterlist: formulate the clusters and cluster functions based on the geometrical information of lattice site.
 2. data_to_corr_mat3: convert the coupled configuration of atomic species and magnetic moment to the correlation matrix of CE.
 3. findcluster3: select the most representative cluster functions (expansion basis) and the corresponding effective cluster interactions (expansion coefficient).
-4. predictstructure_ce3: predict the lowest energy structure using the result of 3).
+4. predictstructure_ce3: predict the lowest energy structure using the result of 3.
 5. link_to_ann: construct and optimize an artificial neural network to fit correlation matrix to formation energy.
 
-The main function of the package is realized by sub-programs 3) and 4).
+The main function of the package is realized by sub-programs 3 and 4. You may use sub-program 5 instead of sub-program 3, but its performance will be inferior to the one of sub-program 3 if the nunmber of data sets is small.
 
-The every code was written in C. The most time consuming part of the package comes from the calculation of the correlation matrix. Hence, sub-programs 2), 3), and 4) were developed in parallel version, using MPI. Sub-program 1) is light to run and a serial program. 
+The every code was written in C. The most time consuming part of the package comes from the calculation of the correlation matrix. Hence, sub-programs 2, 3, and 4 were developed in parallel version, using MPI. Sub-program 1 is light to run and a serial program. 
 
 * * *
 ### Installation 
@@ -29,7 +29,7 @@ The library from Qhull was also used to construct the convex hull and to calcula
 
 For comparison, spin_atom_CE package (not spine_atom_CE3) uses its own code to construct the convex hull, not the library from Qhull.
 
-Although the sub-programs 2)~4) will be compiled by mpicc, they can run on single-cpu.
+Although the sub-programs 2~4 will be compiled by mpicc, they can run on single-cpu.
 
 To compile each sub-program, move in the src_(sub-program) and follow the direction in README there.
 
