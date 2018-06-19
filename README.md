@@ -20,7 +20,7 @@ The main function of the package is realized by sub-programs 3) and 4).
 The every code was written in C. The most time consuming part of the package comes from the calculation of the correlation matrix. Hence, sub-programs 2), 3), and 4) were developed in parallel version, using MPI. Sub-program 1) is light to run and a serial program. 
 
 * * *
-*** Installation 
+### Installation 
 Requirement: mpicc, GSL, qhull
 
 GNU Scientific Library (GSL) was used in several parts of the package and hence the installation of GSL is pre-requisite for compilation (refer to https://www.gnu.org/software/gsl/ for further information).
@@ -39,6 +39,6 @@ Although they developed for the layered Li_[p]Ni_[q]Mn_[r]Co_[s]Va_[2-p-q-r-s]O_
 
 
 * * *
-*** Updates
+### Updates
 - k-NN algorithm for anomaly detection was implemented into data_to_corr_mat (sub-program 2).
 - Backpropagation in artificial neural network architectures was implemended into link_to_ann (sub-program 3a) in version 2.
