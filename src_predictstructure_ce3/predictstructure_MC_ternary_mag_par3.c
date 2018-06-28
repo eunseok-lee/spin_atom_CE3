@@ -38,13 +38,18 @@ int main(int argc, char **argv) {
 
     int i, j, k, l, m, n, nj, nk, tmp;
     int iter, max_iter, dispfreq, newstart;
-    double kT;
+    double kT=0.0256;   // Default value of kT
+    double kT_ini, kT_end;
+    int kT_ini_ctn=0, kT_end_ctn=0;
     int np, howmanyLi, howmanyVa, howmanyMn, howmanyNi, howmanyCo;
     int howmanycluster, howmanyclustercol, ncorr_col, neighbor_num, c2start, c3start;
     int ncluster1, ncluster2, ncluster3;
     int corr_cal_algo = 0;
     int ctr, ctr2;
-    int num_ni4, max_num_ni4;
+    int num_Ni_nm, max_num_Ni_nm;
+    int num_Mn_nm, max_num_Mn_nm;
+    int num_Co_nm, max_num_Co_nm;
+    int num_Li_mag;
     char buff_line[200], dummy[200], param_name[100];
     int param_name_len;
 
@@ -67,7 +72,7 @@ int main(int argc, char **argv) {
     char data_db_filename[100];
     char corr_mat_db_filename[100];
     int ndata;
-    
+
     sprintf(paramfilename,"%s/param.dat",dirname);
     fp = fopen(paramfilename, "r");
     while(fgets(buff_line,sizeof(buff_line),fp) != NULL) {
@@ -137,6 +142,26 @@ int main(int argc, char **argv) {
             sscanf(buff_line,"%s %lf",dummy,&kT);
             if (rank == MASTER)
                 printf("kT = %f\n",kT);
+        }
+        strcpy(param_name,"kT_ini");
+        param_name_len = strlen(param_name);
+        strncpy(dummy,buff_line,param_name_len);
+        dummy[param_name_len] = '\0';
+        if (strcmp(dummy,param_name)==0) {
+            sscanf(buff_line,"%s %lf",dummy,&kT_ini);
+            if (rank == MASTER)
+                printf("kT_ini = %f\n",kT_ini);
+            kT_ini_ctn = 1;
+        }
+        strcpy(param_name,"kT_end");
+        param_name_len = strlen(param_name);
+        strncpy(dummy,buff_line,param_name_len);
+        dummy[param_name_len] = '\0';
+        if (strcmp(dummy,param_name)==0) {
+            sscanf(buff_line,"%s %lf",dummy,&kT_end);
+            if (rank == MASTER)
+                printf("kT_end = %f\n",kT_end);
+            kT_end_ctn = 1;
         }
         strcpy(param_name,"dispfreq");
         param_name_len = strlen(param_name);
@@ -322,7 +347,7 @@ int main(int argc, char **argv) {
         }
         for (i=howmanyLi+howmanyVa+howmanyNi;i<howmanyLi+howmanyVa+howmanyNi+howmanyMn;i++) {
             data_trial[rand_dist[i]] = 0;   //Mn
-            magmom_trial[rand_dist[i]] = 0;
+            magmom_trial[rand_dist[i]] = 1;
         }
         for (i=howmanyLi+howmanyVa+howmanyNi+howmanyMn;i<np;i++) {
             data_trial[rand_dist[i]] = -1;  //Co
@@ -338,15 +363,17 @@ int main(int argc, char **argv) {
         printf("data_trial and magmom_trial were initialized: loaded\n");
     }
 
-    for (i=0;i<np;i++) {
-        printf("%d %d\n",data_trial[i],magmom_trial[i]);
+    if (rank == MASTER) {
+        for (i=0;i<np;i++) {
+            printf("%d %d\n",data_trial[i],magmom_trial[i]);
+        }
     }
     // obtain the correlation matrix through parallel computing
     row_offset = (int) ceil(np*1.0/numprocs);
     double tmp_corr_mat_trial[numprocs][ncorr_col];
     double tmp_corr_mat_trial_task[ncorr_col];
 //    printf("row_offset = %d\n",row_offset);
-    
+
     if (rank == MASTER) {
         strcpy(dirname,"dir_result");
         struct stat st = {0};
@@ -366,8 +393,8 @@ int main(int argc, char **argv) {
             fprintf(fp,"%d\n",magmom_trial[i]);
         }
         fclose(fp);
- 
-		char on_the_fly_filename[100];
+
+        char on_the_fly_filename[100];
         // nullify temporary corr_mat_trial per each core
         for (i=0;i<numprocs;i++)
             for (j=0;j<ncorr_col;j++)
@@ -440,16 +467,34 @@ int main(int argc, char **argv) {
         mag_case_set[4][0] =  1; mag_case_set[4][1] =  0;
         mag_case_set[5][0] =  1; mag_case_set[5][1] = -1;
 
-        num_ni4 = 0;
-        for (i=0;i<np;i++)
+        num_Ni_nm = 0;
+        num_Mn_nm = 0;
+        num_Co_nm = 0;
+
+        for (i=0;i<np;i++) {
             if (data_trial[i]==1 && magmom_trial[i]==0)
-                num_ni4++;
-        max_num_ni4 = (int) floor(howmanyNi/2.0);
-        printf("Initial num_ni4 = %d, max_num_ni4 = %d\n",num_ni4,max_num_ni4);
+                num_Ni_nm++;
+            if (data_trial[i]==0 && magmom_trial[i]==0)
+                num_Mn_nm++;
+            if (data_trial[i]==-1 && magmom_trial[i]==0)
+                num_Co_nm++;
+            if (data_trial[i]==2 && magmom_trial[i]!=0)
+                num_Li_mag++;
+        }
+        max_num_Ni_nm = (int) floor(howmanyNi/2.0);
+        max_num_Ni_nm = max_num_Ni_nm + howmanyVa;
+        max_num_Mn_nm = (int) floor(howmanyMn/2.0);
+        max_num_Co_nm = (int) floor(howmanyCo/2.0);
+        printf("Initial num_Li_mag = %d\n", num_Li_mag);
+        printf("Initial num_Ni_nm = %d, max_num_Ni_nm = %d\n", num_Ni_nm, max_num_Ni_nm);
+//        printf("Initial num_Mn_nm = %d, max_num_Mn_nm = %d\n",num_Mn_nm,max_num_Mn_nm);
+//        printf("Initial num_Co_nm = %d, max_num_Co_nm = %d\n",num_Co_nm,max_num_Co_nm);
 
         for (iter=0;iter<max_iter;iter++) {
+            if (kT_ini_ctn==1 && kT_end_ctn==1)
+                kT = (kT_end-kT_ini)*1.0*iter/(max_iter-1) + kT_ini;
             if (iter%dispfreq==0)
-                printf("MC step: %d, Ef_trial = %.4e, Ef_trial_min = %.4e\n",iter,Ef_trial,Ef_trial_min);
+                printf("MC step: %d, kT = %f, Ef_trial = %.4e, Ef_trial_min = %.4e\n",iter,kT,Ef_trial,Ef_trial_min);
             mat_copy_int(data_trial_old, data_trial, 1, np, 1);
             mat_copy_int(magmom_trial_old, magmom_trial, 1, np, 1);
             mat_copy_double(corr_mat_trial_old, corr_mat_trial, 1, ncorr_col, 1);
@@ -541,53 +586,34 @@ int main(int argc, char **argv) {
                     printf("[E] No corresponding ctr = %d\n");
                     return(0);
                 }
-            
-
-    /*            switch(ctr) {
-                    case 1:
-                        data_trial[swap_i] = swap_case1;
-                        data_trial[swap_j] = swap_case0;
-                        break;
-                    case 2:
-                        magmom_trial[swap_i] = swap_case1;
-                        magmom_trial[swap_j] = swap_case0;
-                        break;
-                    case 3:
-                        magmom_trial[swap_i] = swap_case1;
-                        break;
-                    case 4:
-                        data_trial[swap_i] = swap_case1;
-                        data_trial[swap_j] = swap_case0;
-                        tmp = magmom_trial[swap_i];
-                        magmom_trial[swap_i] = magmom_trial[swap_j];
-                        magmom_trial[swap_j] = tmp;
-                        break;
-                    case 0:
-                        printf("[E] case number is not correct\n");
-                        return(0);
-                }*/
 
 //                printf("%d case processed\n",ctr);
 
                     // Check if the event is compatible with constraints on configuration
-                num_ni4 = 0;
+                num_Ni_nm = 0;
+                num_Mn_nm = 0;
+                num_Co_nm = 0;
+                num_Li_mag = 0;
+
                 for (i=0;i<np;i++) {
-    /*                    if (*(data_trial+i)==0 && *(magmom_trial+i)!=0) {
-                            ctr = 0;
-                            printf("ctr was zeroed: incompatible with Li env.\n");
-                            break;
-                        }*/
-    /*                    if (*(data_trial+i)==1 && *(magmom_trial+i)!=1) {
-                            ctr = 0;
-                            printf("ctr was zeroed: incompatible with Mn env.\n");
-                            break;
-                        }*/
-                    if (*(data_trial+i)==1 && *(magmom_trial+i)==0)
-                        num_ni4++;
+                    if (data_trial[i]==1 && magmom_trial[i]==0)
+                        num_Ni_nm++;
+                    if (data_trial[i]==0 && magmom_trial[i]==0)
+                        num_Mn_nm++;
+                    if (data_trial[i]==-1 && magmom_trial[i]==0)
+                        num_Co_nm++;
+                    if (data_trial[i]==2 && magmom_trial[i]!=0)
+                        num_Li_mag++;
                 }
-                if (num_ni4 > max_num_ni4) {
+
+                if ( num_Ni_nm > max_num_Ni_nm ) {
+//                    printf("ctr=%d was zeroed: num_Ni_nm=%d incompatible with Ni-antisite max=%d.\n",ctr,num_Ni_nm,max_num_Ni_nm);
                     ctr = 0;
-//                    printf("ctr was zeroed: num_Ni4=%d incompatible with Ni-antisite max=%d.\n",num_ni4,max_num_ni4);
+                }
+
+                if ( num_Li_mag > 0 ) {
+//                    printf("ctr=%d was zeroed: num_Li_mag=%d incompatible with Li magnetic state.\n",ctr,num_Li_mag);
+                    ctr = 0;
                 }
 
                 if (ctr==0) {
@@ -693,7 +719,7 @@ int main(int argc, char **argv) {
         for (i=0;i<np;i++)
             fprintf(fp2,"%d\n",magmom_trial_min[i]);
 		fclose(fp2);
-        
+
         char corrmatfilename[100];
         sprintf(corrmatfilename,"%s/corr_mat_trial_min.dat",dirname);
         fp2 = fopen(corrmatfilename,"w");
@@ -701,7 +727,7 @@ int main(int argc, char **argv) {
             fprintf(fp2,"%f ",corr_mat_trial_min[i]);
         fclose(fp2);
 
-        
+
         if (check_db == 1) {
             strcpy(dirname,"dir_inputs");
             sprintf(loadfilename,"%s/%s",dirname,corr_mat_db_filename);
@@ -854,11 +880,11 @@ void load_int_mat(int *A, int Arow, int Acol, int Apgs, char *datfilename) {
 }
 
 void load_double_mat(double *A, int Arow, int Acol, int Apgs, char *datfilename) {
-    
+
     FILE *fp;
     int i, j, k;
     double tmp;
-    
+
     printf("filename: %s\n", datfilename);
     fp = fopen(datfilename, "r");
     for (k=0;k<Apgs;k++)
@@ -867,7 +893,7 @@ void load_double_mat(double *A, int Arow, int Acol, int Apgs, char *datfilename)
                 fscanf(fp, "%lf", &tmp);
                 *(A+Arow*Acol*k+Acol*i+j) = tmp;
             }
-    
+
     fclose(fp);
-    
+
 }

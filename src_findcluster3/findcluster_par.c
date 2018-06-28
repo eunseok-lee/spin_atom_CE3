@@ -51,6 +51,8 @@ int main(int argc, char **argv)
     int i, j, k, nj, nk, ctn;
     int iter, max_iter;
     double kT=0.0256;   // Default value of kT
+    double kT_ini, kT_end;
+    int kT_ini_ctn=0, kT_end_ctn=0;
     int howmanycluster;
     int dispfreq;
     char buff_line[200], dummy[200], param_name[100];
@@ -138,6 +140,26 @@ int main(int argc, char **argv)
             sscanf(buff_line,"%s %lf",dummy,&kT);
             if (rank == MASTER)
                 printf("kT = %f\n",kT);
+        }
+        strcpy(param_name,"kT_ini");
+        param_name_len = strlen(param_name);
+        strncpy(dummy,buff_line,param_name_len);
+        dummy[param_name_len] = '\0';
+        if (strcmp(dummy,param_name)==0) {
+            sscanf(buff_line,"%s %lf",dummy,&kT_ini);
+            if (rank == MASTER)
+                printf("kT_ini = %f\n",kT_ini);
+            kT_ini_ctn = 1;
+        }
+        strcpy(param_name,"kT_end");
+        param_name_len = strlen(param_name);
+        strncpy(dummy,buff_line,param_name_len);
+        dummy[param_name_len] = '\0';
+        if (strcmp(dummy,param_name)==0) {
+            sscanf(buff_line,"%s %lf",dummy,&kT_end);
+            if (rank == MASTER)
+                printf("kT_end = %f\n",kT_end);
+            kT_end_ctn = 1;
         }
         strcpy(param_name,"cvs_tol");
         param_name_len = strlen(param_name);
@@ -244,6 +266,8 @@ int main(int argc, char **argv)
                 err2_sum_from_master += err2_sum_from_worker;
             }
             cvs = sqrt(err2_sum_from_master/n_corr_mat_ug_row);
+            if (kT_ini_ctn==1 && kT_end_ctn==1)
+                kT = (kT_end-kT_ini)*1.0*iter/(max_iter-1) + kT_ini;
             if (cvs < cvs_old)
                 cluster_set2[select2] = target;
             else if (exp(-(cvs-cvs_old)/kT) > drand48())
@@ -260,7 +284,7 @@ int main(int argc, char **argv)
             if (cvs < cvs_tol)
                 break;
             if (iter%dispfreq==0)
-                printf("iter=%8d, cvs=%f, cvs_min=%f, cvs_min/fu=%f\n",iter,cvs,cvs_min,cvs_min/nfu);
+                printf("iter=%8d, kT=%f, cvs=%f, cvs_min=%f, cvs_min/fu=%f\n",iter,kT,cvs,cvs_min,cvs_min/nfu);
         }
         
         // print the result
