@@ -20,10 +20,11 @@ To run the executable, the parameters in the following list should be provided.
 3) n_non_singular_col: the number of non-singular cluster functions 
 4) howmanycluster: the number of cluster functions to be selected
 5) max_iter: maximum number of iteration
-6) kT: the thermal energy parameter in Boltzmann factor, in eV 
-7) cvs_tol: the critical value of cross-validation-score to finish the iteration
-8) dispfreq: frequency of displaying & storing 
-9) nfu: the number of formula unit
+6) kT_ini: the thermal energy parameter in Boltzmann factor, in eV, at the initial step
+7) kT_end: the thermal energy parameter in Boltzmann factor, in eV, at the end step 
+8) cvs_tol: the critical value of cross-validation-score to finish the iteration
+9) dispfreq: frequency of displaying & storing 
+10) nfu: the number of formula unit
 
 These parameters should be written in param.dat.
 

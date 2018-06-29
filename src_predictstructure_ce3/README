@@ -20,20 +20,21 @@ To run the executable, the parameters in the following list should be provided.
 4) howmanyCo: the number of Co atoms
 5) newstart: 1-new start (random initial configurations), 0-restart (load existing initial configurations)
 6) max_iter: the maximum number of iteration
-7) kT: the thermal energy in Boltzmann factor
-8) dispfreq: the frequency of displaying and storing the result
-9) np: the number of cationic lattice sites
-10) neighbor_num: the number of neighbors of each atom
-11) howmanyclustercol: the number of cluster functions (selected from find cluster)
-12) ncluster1: the number of point cluster types
-13) ncluster2: the number of pair cluster types
-14) ncluster3: the number of three-body cluster types
-15) data_ini_filename: the file name of initial configuration of atomic species
-16) magmom_ini_filename: the file name of initial configuration of spin species
-17) check_db: 1)-check if the predicted configuration is already existing in the training database, 0)-no check
-18) data_db_filename: a file for reference data database
-19) corr_mat_db_filename: a file for reference correlation matrix database
-20) ndata: the number of data in the training database
+7) kT_ini: the thermal energy in Boltzmann factor at the initial step
+8) kT_end: the thermal energy in Boltzmann factor at the end step
+9) dispfreq: the frequency of displaying and storing the result
+10) np: the number of cationic lattice sites
+11) neighbor_num: the number of neighbors of each atom
+12) howmanyclustercol: the number of cluster functions (selected from find cluster)
+13) ncluster1: the number of point cluster types
+14) ncluster2: the number of pair cluster types
+15) ncluster3: the number of three-body cluster types
+16) data_ini_filename: the file name of initial configuration of atomic species
+17) magmom_ini_filename: the file name of initial configuration of spin species
+18) check_db: 1)-check if the predicted configuration is already existing in the training database, 0)-no check
+19) data_db_filename: a file for reference data database
+20) corr_mat_db_filename: a file for reference correlation matrix database
+21) ndata: the number of data in the training database
 
 These parameters should be written in param.dat.
 

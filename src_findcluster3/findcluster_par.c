@@ -132,14 +132,14 @@ int main(int argc, char **argv)
             if (rank == MASTER)
                 printf("max_iter = %d\n",max_iter);
         }
-        strcpy(param_name,"kT");
+        strcpy(param_name,"kT_all");
         param_name_len = strlen(param_name);
         strncpy(dummy,buff_line,param_name_len);
         dummy[param_name_len] = '\0';
         if (strcmp(dummy,param_name)==0) {
             sscanf(buff_line,"%s %lf",dummy,&kT);
             if (rank == MASTER)
-                printf("kT = %f\n",kT);
+                printf("kT_all = %f\n",kT);
         }
         strcpy(param_name,"kT_ini");
         param_name_len = strlen(param_name);
