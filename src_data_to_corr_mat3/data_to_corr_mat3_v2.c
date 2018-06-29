@@ -520,7 +520,7 @@ int main(int argc, char **argv)
         // select the near-convex-hull or the acceptable-anomaly
         int n_corr_mat_uga_row = 0;
         for (i=0;i<n_nondegenerate;i++)
-            if (use_anomaly_detection==1) {
+            if (use_anomaly_detection==0 || use_anomaly_detection==1) {
                 if (near_convh[i]==1 && anomaly_status[i]==1)
                     n_corr_mat_uga_row++;
             }
@@ -533,7 +533,7 @@ int main(int argc, char **argv)
         double Ef_uga[n_corr_mat_uga_row];
         l = 0;
         for (i=0;i<n_nondegenerate;i++)
-            if (use_anomaly_detection==1) {
+            if (use_anomaly_detection==0 || use_anomaly_detection==1) {
                 if (near_convh[i]==1 && anomaly_status[i]==1) {
                     for (j=0;j<ncorr_col;j++)
                         *(corr_mat_uga+l*ncorr_col+j) = *(corr_mat_u+i*ncorr_col+j);
@@ -549,8 +549,12 @@ int main(int argc, char **argv)
                     l++;
                 }
             }
-        printf("\nStates beyond convex hull && beyond anomaly_score_crit were filted out; n_corr_mat_uga_row: %d\n", n_corr_mat_uga_row);
-
+        if (use_anomaly_detection==0)
+            printf("\nStates within convex hull were selected; anomaly detection was not used; n_corr_mat_uga_row: %d\n", n_corr_mat_uga_row);
+        else if (use_anomaly_detection==1)
+            printf("\nStates within convex hull && within anomaly_score_crit were selected; n_corr_mat_uga_row: %d\n", n_corr_mat_uga_row);
+        else if (use_anomaly_detection==2)
+            printf("\nStates within convex hull || within anomaly_score_crit were selected; n_corr_mat_uga_row: %d\n", n_corr_mat_uga_row);
         // select the non-singular columns only
         int n_non_singular_col;
         int col_singularity[ncorr_col];
