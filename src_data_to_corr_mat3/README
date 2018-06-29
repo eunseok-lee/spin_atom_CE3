@@ -23,7 +23,7 @@ To run the executable, the parameters in the following list should be provided.
 7) Ndim: the number of independent axis
 8) near_convh_cutoff: the critical energy to filter out the data with extremely high Ef
 9) qhullflags: Qhull precision option. Q0 is recommended.
-10) use_anomaly_detection: 1-use, 0-not use
+10) use_anomaly_detection: 0-not use (use convexh only), 1-use anomaly&&convexh, 2-use anomaly||convexh
 11) anomaly_score_crit: critical value of anomaly score, to determine the defective data
 12) knn: the knn-th nearest neighbor instances will be considered for anomaly score.
 
