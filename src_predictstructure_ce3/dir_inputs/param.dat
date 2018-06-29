@@ -5,7 +5,8 @@ howmanyMn	2
 howmanyCo	1
 newstart	1
 max_iter	2000
-kT		0.0256
+kT_ini		0.0256
+kT_end		0.001
 dispfreq	100
 # cluster parameters
 np		4
