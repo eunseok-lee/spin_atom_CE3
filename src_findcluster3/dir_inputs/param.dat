@@ -1,5 +1,5 @@
-corr_mat_ugs_filename	corr_mat_ugs.dat 
-n_corr_mat_ug_row	56 
+corr_mat_ugas_filename	corr_mat_ugas.dat 
+n_corr_mat_uga_row	56 
 n_non_singular_col	149 
 howmanycluster		10 
 max_iter		10000 
@@ -8,3 +8,4 @@ kT_end			0.01
 cvs_tol			0.01
 dispfreq		10
 nfu			2
+newstart        0

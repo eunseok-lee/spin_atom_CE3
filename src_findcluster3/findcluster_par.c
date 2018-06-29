@@ -55,6 +55,7 @@ int main(int argc, char **argv)
     int kT_ini_ctn=0, kT_end_ctn=0;
     int howmanycluster;
     int dispfreq;
+    int newstart = 1;   // Default value - 0: continue, 1: newstart
     char buff_line[200], dummy[200], param_name[100];
     int param_name_len;
     double cvs_tol = 0.01;  // Default value of cvs_tol
@@ -74,36 +75,36 @@ int main(int argc, char **argv)
 
     // Construct conrrelation matrix. It can also be loaded.
     
-    int n_corr_mat_ug_row;
+    int n_corr_mat_uga_row;
     int n_non_singular_col;
     FILE *fp;
     char dirname[100]="dir_inputs";
     char paramfilename[100];
     sprintf(paramfilename,"%s/param.dat",dirname);
-    char corr_mat_ugs_filename[200];
+    char corr_mat_ugas_filename[200];
     fp = fopen(paramfilename, "r");
     while(fgets(buff_line,sizeof(buff_line),fp) != NULL) {
         if (buff_line[0] == '#') {
             //            printf("Comment line: %s",buff_line);
             continue;
         }
-        strcpy(param_name,"corr_mat_ugs_filename");
+        strcpy(param_name,"corr_mat_ugas_filename");
         param_name_len = strlen(param_name);
         strncpy(dummy,buff_line,param_name_len);
         dummy[param_name_len] = '\0';
         if (strcmp(dummy,param_name)==0) {
-            sscanf(buff_line,"%s %s",dummy,corr_mat_ugs_filename);
+            sscanf(buff_line,"%s %s",dummy,corr_mat_ugas_filename);
             if (rank == MASTER)
-                printf("corr_mat_ugs_filename = %s\n",corr_mat_ugs_filename);
+                printf("corr_mat_ugas_filename = %s\n",corr_mat_ugas_filename);
         }
-        strcpy(param_name,"n_corr_mat_ug_row");
+        strcpy(param_name,"n_corr_mat_uga_row");
         param_name_len = strlen(param_name);
         strncpy(dummy,buff_line,param_name_len);
         dummy[param_name_len] = '\0';
         if (strcmp(dummy,param_name)==0) {
-            sscanf(buff_line,"%s %d",dummy,&n_corr_mat_ug_row);
+            sscanf(buff_line,"%s %d",dummy,&n_corr_mat_uga_row);
             if (rank == MASTER)
-                printf("n_corr_mat_ug_row = %d\n",n_corr_mat_ug_row);
+                printf("n_corr_mat_uga_row = %d\n",n_corr_mat_uga_row);
         }
         strcpy(param_name,"n_non_singular_col");
         param_name_len = strlen(param_name);
@@ -188,28 +189,37 @@ int main(int argc, char **argv)
             if (rank == MASTER)
                 printf("nfu = %d\n",nfu);
         }
+        strcpy(param_name,"newstart");
+        param_name_len = strlen(param_name);
+        strncpy(dummy,buff_line,param_name_len);
+        dummy[param_name_len] = '\0';
+        if (strcmp(dummy,param_name)==0) {
+            sscanf(buff_line,"%s %d",dummy,&newstart);
+            if (rank == MASTER)
+                printf("newstart = %d\n",newstart);
+        }
     }
     fclose(fp);
 
     char loadfilename[100];
-    double *corr_mat_ugs;
-    corr_mat_ugs = (double*) malloc(n_corr_mat_ug_row*n_non_singular_col*sizeof(double));
-    sprintf(loadfilename,"%s/%s",dirname,corr_mat_ugs_filename);
-    load_double_mat(corr_mat_ugs,n_corr_mat_ug_row,n_non_singular_col,1,loadfilename);
+    double *corr_mat_ugas;
+    corr_mat_ugas = (double*) malloc(n_corr_mat_uga_row*n_non_singular_col*sizeof(double));
+    sprintf(loadfilename,"%s/%s",dirname,corr_mat_ugas_filename);
+    load_double_mat(corr_mat_ugas,n_corr_mat_uga_row,n_non_singular_col,1,loadfilename);
     
     int usefulcorr_col[n_non_singular_col];
     sprintf(loadfilename,"%s/usefulcorr_col.dat",dirname);
     load_int_array(usefulcorr_col,n_non_singular_col,loadfilename);
     
-    double Ef_ug[n_corr_mat_ug_row];
-    sprintf(loadfilename,"%s/Ef_ug.dat",dirname);
-    load_double_array(Ef_ug,n_corr_mat_ug_row,loadfilename);
+    double Ef_uga[n_corr_mat_uga_row];
+    sprintf(loadfilename,"%s/Ef_uga.dat",dirname);
+    load_double_array(Ef_uga,n_corr_mat_uga_row,loadfilename);
     
-/*    int nC_ug[n_corr_mat_ug_row];
-    sprintf(loadfilename,"%s/nC_ug.dat",dirname);
-    load_int_array(nC_ug,n_corr_mat_ug_row,loadfilename);
+/*    int nC_uga[n_corr_mat_uga_row];
+    sprintf(loadfilename,"%s/nC_uga.dat",dirname);
+    load_int_array(nC_uga,n_corr_mat_uga_row,loadfilename);
 */
-    row_offset = (int) ceil(n_corr_mat_ug_row*1.0/numprocs);
+    row_offset = (int) ceil(n_corr_mat_uga_row*1.0/numprocs);
     if (numprocs>1 && rank==MASTER)
         printf("Correlation Matrix is calculated over %d processors: row_offset = %d\n",numprocs,row_offset);
     double err2_sum_from_master;
@@ -222,18 +232,37 @@ int main(int argc, char **argv)
         double cvs, cvs_old, cvs_min;
         int select1, select2, target, candidate;
         
-        for (i=0;i<howmanycluster;i++)
-            cluster_set1[i] = i;
-        for (i=0;i<n_non_singular_col-howmanycluster;i++)
-            cluster_set2[i] = i+howmanycluster;
-        
+        if (newstart==1) {
+            for (i=0;i<howmanycluster;i++)
+                cluster_set1[i] = i;
+            for (i=0;i<n_non_singular_col-howmanycluster;i++)
+                cluster_set2[i] = i+howmanycluster;
+            printf("cluster_set1 was newly generated.\n");
+        }
+        else {
+            load_int_array(cluster_set1, howmanycluster, "dir_inputs/cluster_set1_cont.dat");
+            printf("cluster_set1 was load for continuous run.\n");
+            k = 0;
+            for (i=0;i<n_non_singular_col;i++) {
+                ctn = 0;
+                for (j=0;j<howmanycluster;j++)
+                    if (i==cluster_set1[j]) {
+                        ctn = 1;
+                        break;
+                    }
+                if (ctn==0) {
+                    cluster_set2[k] = i;
+                    k++;
+                }
+            }
+        }
         mtype = FROM_MASTER;
         for (i=1;i<numprocs;i++) {
             MPI_Send(&cluster_set1, howmanycluster, MPI_INT, i, mtype, MPI_COMM_WORLD);
         }
         row_ini = rank * row_offset;
         row_end = row_ini +row_offset;
-        err2_sum_from_master = obtainerr2_par(row_ini,row_end,corr_mat_ugs,n_corr_mat_ug_row,n_non_singular_col,cluster_set1,howmanycluster,Ef_ug);
+        err2_sum_from_master = obtainerr2_par(row_ini,row_end,corr_mat_ugas,n_corr_mat_uga_row,n_non_singular_col,cluster_set1,howmanycluster,Ef_uga);
 //        printf("initial err2 = %f\n",err2_sum_from_master);
         for (i=1;i<numprocs;i++) {
             mtype = FROM_WORKER;
@@ -241,7 +270,7 @@ int main(int argc, char **argv)
             err2_sum_from_master += err2_sum_from_worker;
         }
         printf("initial err2 = %f\n",err2_sum_from_master);
-        cvs = sqrt(err2_sum_from_master/n_corr_mat_ug_row);
+        cvs = sqrt(err2_sum_from_master/n_corr_mat_uga_row);
         cvs_min = cvs;
         for (i=0;i<howmanycluster;i++)
             cluster_set1_min[i] = cluster_set1[i];
@@ -259,13 +288,13 @@ int main(int argc, char **argv)
             }
             row_ini = rank * row_offset;
             row_end = row_ini +row_offset;
-            err2_sum_from_master = obtainerr2_par(row_ini,row_end,corr_mat_ugs,n_corr_mat_ug_row,n_non_singular_col,cluster_set1,howmanycluster,Ef_ug);
+            err2_sum_from_master = obtainerr2_par(row_ini,row_end,corr_mat_ugas,n_corr_mat_uga_row,n_non_singular_col,cluster_set1,howmanycluster,Ef_uga);
             for (i=1;i<numprocs;i++) {
                 mtype = FROM_WORKER;
                 MPI_Recv(&err2_sum_from_worker, 1, MPI_DOUBLE, i, mtype, MPI_COMM_WORLD, &status);
                 err2_sum_from_master += err2_sum_from_worker;
             }
-            cvs = sqrt(err2_sum_from_master/n_corr_mat_ug_row);
+            cvs = sqrt(err2_sum_from_master/n_corr_mat_uga_row);
             if (kT_ini_ctn==1 && kT_end_ctn==1)
                 kT = (kT_end-kT_ini)*1.0*iter/(max_iter-1) + kT_ini;
             if (cvs < cvs_old)
@@ -294,20 +323,20 @@ int main(int argc, char **argv)
             printf("    %4d                %4d\n",cluster_set1_min[i],usefulcorr_col[cluster_set1_min[i]]);
         
         double err_pred, rms;
-        double Ef_pred[n_corr_mat_ug_row];
-        double *corr_mat_ugs_reduced;
-        corr_mat_ugs_reduced = (double*) malloc(n_corr_mat_ug_row*howmanycluster*sizeof(double));
+        double Ef_pred[n_corr_mat_uga_row];
+        double *corr_mat_ugas_reduced;
+        corr_mat_ugas_reduced = (double*) malloc(n_corr_mat_uga_row*howmanycluster*sizeof(double));
         double eci[howmanycluster];
-        for (i=0;i<n_corr_mat_ug_row;i++) {
+        for (i=0;i<n_corr_mat_uga_row;i++) {
             for (j=0;j<howmanycluster;j++)
-                *(corr_mat_ugs_reduced+howmanycluster*i+j) = *(corr_mat_ugs+n_non_singular_col*i+cluster_set1_min[j]);
+                *(corr_mat_ugas_reduced+howmanycluster*i+j) = *(corr_mat_ugas+n_non_singular_col*i+cluster_set1_min[j]);
         }
-        least_square_solver(corr_mat_ugs_reduced,n_corr_mat_ug_row,howmanycluster,Ef_ug,eci);
-        mat2d_prod(Ef_pred,n_corr_mat_ug_row,1,corr_mat_ugs_reduced,n_corr_mat_ug_row,howmanycluster,eci,howmanycluster,1);
+        least_square_solver(corr_mat_ugas_reduced,n_corr_mat_uga_row,howmanycluster,Ef_uga,eci);
+        mat2d_prod(Ef_pred,n_corr_mat_uga_row,1,corr_mat_ugas_reduced,n_corr_mat_uga_row,howmanycluster,eci,howmanycluster,1);
         err_pred = 0.0;
-        for (i=0;i<n_corr_mat_ug_row;i++)
-            err_pred += (Ef_ug[i] - Ef_pred[i])*(Ef_ug[i] - Ef_pred[i]);
-        rms = sqrt(err_pred/n_corr_mat_ug_row);
+        for (i=0;i<n_corr_mat_uga_row;i++)
+            err_pred += (Ef_uga[i] - Ef_pred[i])*(Ef_uga[i] - Ef_pred[i]);
+        rms = sqrt(err_pred/n_corr_mat_uga_row);
         printf("ECIs\n");
         for (i=0;i<howmanycluster;i++) {
             printf("\t%.4e\n",eci[i]);
@@ -340,8 +369,8 @@ int main(int argc, char **argv)
             row_ini = rank * row_offset;
             row_end = row_ini + row_offset;
             if (rank == numprocs-1)
-                row_end = n_corr_mat_ug_row;  // last processor till the last row, -1 is taken inside obtainerr2_par
-            err2_sum_from_worker = obtainerr2_par(row_ini,row_end,corr_mat_ugs,n_corr_mat_ug_row,n_non_singular_col,cluster_set1,howmanycluster,Ef_ug);
+                row_end = n_corr_mat_uga_row;  // last processor till the last row, -1 is taken inside obtainerr2_par
+            err2_sum_from_worker = obtainerr2_par(row_ini,row_end,corr_mat_ugas,n_corr_mat_uga_row,n_non_singular_col,cluster_set1,howmanycluster,Ef_uga);
             mtype = FROM_WORKER;
             MPI_Send(&err2_sum_from_worker, 1, MPI_DOUBLE, MASTER, mtype, MPI_COMM_WORLD);
         }
