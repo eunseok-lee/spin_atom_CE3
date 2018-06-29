@@ -3,7 +3,8 @@ n_corr_mat_ug_row	56
 n_non_singular_col	149 
 howmanycluster		10 
 max_iter		10000 
-kT			0.15 
+kT_ini			0.15 
+kT_end			0.01 
 cvs_tol			0.01
 dispfreq		10
 nfu			2
