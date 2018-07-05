@@ -27,7 +27,7 @@ GNU Scientific Library (GSL) was used in several parts of the package and hence 
 
 The library from Qhull was also used to construct the convex hull and to calculate the formation energy above the convex hull. Hence, the user needs to install Qhull on their local machine and add the location of library to the PATH. The user can do this by downloading and extracting qhull package, 'make', 'make install', and 'export LD_LIBRARY_PATH=$PWD/lib:$LD_LIBRARY_PATH' (refer to http://www.qhull.org for detailed information). 
 
-For comparison, spin_atom_CE package (not spine_atom_CE3) uses its own code to construct the convex hull, not the library from Qhull.
+For comparison, spin_atom_CE package (not spin_atom_CE3) uses its own code to construct the convex hull, not the library from Qhull.
 
 Although the sub-programs 2~4 will be compiled by mpicc, they can run on single-cpu.
 
