@@ -33,7 +33,7 @@ In addition to param.dat, the following files also should be provided.
 1) corr_mat_ugas_filename (e.g. corr_mat_ugas.dat): the correlation matrix after post processing
 2) Ef_uga.dat: the formation energy after post processing
 3) usefulcorr_col.dat: the list of non-singular cluster functions
-4) (optional) cluster_set1_cont.dat: cluster_set1 from the previous run, if newstart (in param.dat) is set to 0
+4) (optional) cluster_set1_in_usefulcol.dat: cluster_set1 from the previous run, if newstart (in param.dat) is set to 0
 
 The files 1)-4) can provided from the result of running data_to_corr_mat3 (another program of the package), or other external programs.
 
@@ -43,8 +43,9 @@ You can run the executable as follows.
 
 The results will be stored in dir_result, which will be created or updated during the running, as listed in the following list.
 
-1) cluster_set_min.dat: the selected cluster functions
-2) x.dat: the effective cluster interactions
+1) cluster_set_min_in_usefulcol.dat: the selected cluster function ids w.r.t. useful columns
+2) cluster_set_min_in_everycol.dat: the selected cluster function ids w..r.t. every column
+3) x.dat: the effective cluster interactions
 
-These results can be used for predictstructure_ce3.
+Result 1) can be used as input for continuous run while results 2) and 3) can be used for predictstructure_ce3.
 
