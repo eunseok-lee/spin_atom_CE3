@@ -240,7 +240,7 @@ int main(int argc, char **argv)
             printf("cluster_set1 was newly generated.\n");
         }
         else {
-            load_int_array(cluster_set1, howmanycluster, "dir_inputs/cluster_set1_cont.dat");
+            load_int_array(cluster_set1, howmanycluster, "dir_inputs/cluster_set1_in_usefulcol.dat");
             printf("cluster_set1 was load for continuous run.\n");
             k = 0;
             for (i=0;i<n_non_singular_col;i++) {
@@ -343,8 +343,9 @@ int main(int argc, char **argv)
         }
 
         // Write result into files
-        FILE *fp2, *fp3;
+        FILE *fp2, *fp3, *fp4;
         char cluster_set_filename[200];
+        char cluster_set_filename2[200];
         char eci_filename[100];
         strcpy(dirname,"dir_result");
         struct stat st = {0};
@@ -352,14 +353,17 @@ int main(int argc, char **argv)
             mkdir(dirname,0777);
             printf("Created a new directory for storing result.\n");
         }
-        sprintf(cluster_set_filename, "%s/cluster_set_min.dat",dirname);
+        sprintf(cluster_set_filename, "%s/cluster_set_min_in_usefulcol.dat",dirname);
+        sprintf(cluster_set_filename2, "%s/cluster_set_min_in_everycol.dat",dirname);
         sprintf(eci_filename,"%s/x.dat",dirname);
         fp2 = fopen(cluster_set_filename,"w");
-        fp3 = fopen(eci_filename,"w");
+        fp3 = fopen(cluster_set_filename2,"w");
+        fp4 = fopen(eci_filename,"w");
         for (i=0;i<howmanycluster;i++) {
 //            fprintf(fp2,"%4d\t%4d\n",cluster_set1_min[i],usefulcorr_col[cluster_set1_min[i]]);
             fprintf(fp2,"%d\n",cluster_set1_min[i]);
-            fprintf(fp3,"%.4e\n",eci[i]);
+            fprintf(fp3,"%d\n",usefulcorr_col[cluster_set1_min[i]]);
+            fprintf(fp4,"%.4e\n",eci[i]);
         }
     }
     else {
