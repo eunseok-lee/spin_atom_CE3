@@ -5,7 +5,7 @@
 ##########################################################
 
 This program is a part of the spin-atom CE package for the layered LNMCV system.
-This program construct an artificial neural network, comprised of one hidden layer and one output layer, to fit the correlation matrix to the formation energy. The backpropagation algorithm and the sigmoid activation function were employed. In general, activation functions are not used for regression, however, it was for this program considering the noise in data (unconverged DFT calculations).
+This program construct an artificial neural network, comprised of one hidden layer and one output layer, to fit the correlation matrix to the formation energy. The backpropagation algorithm and the sigmoid activation function were employed. In general, activation functions are not used for regression, however, were used for this program considering the noise in data (unconverged DFT calculations).
 To compile this program, type 'make' at the prompt.
 
 >> make
